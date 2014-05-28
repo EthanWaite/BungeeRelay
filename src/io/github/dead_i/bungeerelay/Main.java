@@ -40,11 +40,11 @@ public class Main extends ConfigurablePlugin {
         getProxy().getPluginManager().registerCommand(this, new PMRCommand(this));
 
         // Initiate the connection, which will, in turn, pass the socket to the IRC class
-        new Thread(new Runnable() {
+        getProxy().getScheduler().runAsync(this, new Runnable() {
             public void run() {
                 connect();
             }
-        }).start();
+        });
     }
 
     public void connect() {
