@@ -10,14 +10,14 @@ import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.api.plugin.Plugin;
 import net.md_5.bungee.event.EventHandler;
 
-public class ServerConnectedListener implements Listener {
+public class ServerConnectListener implements Listener {
     Plugin plugin;
-    public ServerConnectedListener(Plugin plugin) {
+    public ServerConnectListener(Plugin plugin) {
         this.plugin = plugin;
     }
 
     @EventHandler
-    public void onServerConnected(ServerConnectEvent event) {
+    public void onServerConnect(ServerConnectEvent event) {
         ProxiedPlayer p = event.getPlayer();
         String confchan = IRC.config.getString("server.channel");
         String c = confchan;

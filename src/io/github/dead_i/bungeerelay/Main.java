@@ -26,7 +26,7 @@ public class Main extends ConfigurablePlugin {
         getProxy().getPluginManager().registerListener(this, new ChatListener(this));
         getProxy().getPluginManager().registerListener(this, new PlayerDisconnectListener(this));
         getProxy().getPluginManager().registerListener(this, new PostLoginListener(this));
-        getProxy().getPluginManager().registerListener(this, new ServerConnectedListener(this));
+        getProxy().getPluginManager().registerListener(this, new ServerConnectListener(this));
         getProxy().getPluginManager().registerListener(this, new ServerDisconnectListener(this));
 
         // Register commands
