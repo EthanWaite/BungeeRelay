@@ -3,6 +3,7 @@ package io.github.dead_i.bungeerelay.listeners;
 import io.github.dead_i.bungeerelay.IRC;
 import io.github.dead_i.bungeerelay.Util;
 import net.md_5.bungee.api.ChatColor;
+import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.event.ServerConnectEvent;
@@ -18,6 +19,7 @@ public class ServerConnectListener implements Listener {
 
     @EventHandler
     public void onServerConnect(ServerConnectEvent event) {
+        if (!IRC.sock.isConnected()) return;
         ProxiedPlayer p = event.getPlayer();
         String confchan = IRC.config.getString("server.channel");
         String c = confchan;

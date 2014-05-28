@@ -14,6 +14,6 @@ public class PlayerDisconnectListener implements Listener {
 
     @EventHandler
     public void onPlayerDisconnect(PlayerDisconnectEvent event) {
-        IRC.out.println(":" + IRC.uids.get(event.getPlayer()) + " QUIT :Disconnected from the network");
+        if (IRC.sock.isConnected()) IRC.out.println(":" + IRC.uids.get(event.getPlayer()) + " QUIT :Disconnected from the network");
     }
 }

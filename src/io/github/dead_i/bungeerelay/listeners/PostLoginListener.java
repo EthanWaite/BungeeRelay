@@ -16,6 +16,7 @@ public class PostLoginListener implements Listener {
 
     @EventHandler
     public void onPostLogin(PostLoginEvent event) {
+        if (!IRC.sock.isConnected()) return;
         ProxiedPlayer p = event.getPlayer();
         Util.sendUserConnect(p);
         Util.incrementUid();

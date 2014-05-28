@@ -17,6 +17,7 @@ public class ChatListener implements Listener {
 
     @EventHandler
     public void onChat(ChatEvent event) {
+        if (!IRC.sock.isConnected()) return;
         ProxiedPlayer p = (ProxiedPlayer) event.getSender();
         String msg = event.getMessage();
         if (!msg.startsWith("/") || (msg.startsWith("/me") && p.hasPermission("irc.me"))) {
