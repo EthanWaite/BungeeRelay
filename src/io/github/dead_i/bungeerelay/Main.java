@@ -10,7 +10,6 @@ import java.net.UnknownHostException;
 import java.util.concurrent.TimeUnit;
 
 public class Main extends ConfigurablePlugin {
-    private static IRC irc;
     public void onEnable() {
         // Immediately provide an offline mode warning, due to how incredibly dangerous it is in the case of this plugin.
         if (!getProxy().getConfig().isOnlineMode()) {
@@ -59,7 +58,7 @@ public class Main extends ConfigurablePlugin {
     public void connect() {
         getLogger().info("Attempting connection...");
         try {
-            irc = new IRC(new Socket(getConfig().getString("server.host"), getConfig().getInt("server.port")), getConfig(), this);
+            new IRC(new Socket(getConfig().getString("server.host"), getConfig().getInt("server.port")), getConfig(), this);
         } catch (UnknownHostException e) {
             handleDisconnect();
         } catch (IOException e) {
