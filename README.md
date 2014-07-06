@@ -15,4 +15,4 @@ The plugin makes use of Maven to enable fast and easy compiling. If you wish to 
 
 Licence
 -------
-This plugin and its source code is licenced under the [Creative Commons Attribution-ShareAlike 4.0 International licence](http://creativecommons.org/licenses/by-sa/4.0/deed.en_US). The "Attribution" section of the licence is attained by leaving the credit already in BungeeLink, namely in the plugin.yml file.
+This plugin and its source code is licenced under the [Creative Commons Attribution-ShareAlike 4.0 International licence](http://creativecommons.org/licenses/by-sa/4.0/deed.en_US). The "Attribution" section of the licence is attained by leaving the credit already in BungeeRelay, namely in the plugin.yml file.
