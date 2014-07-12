@@ -1,15 +1,21 @@
 package io.github.dead_i.bungeerelay;
 
+import com.google.common.io.ByteStreams;
 import io.github.dead_i.bungeerelay.commands.*;
 import io.github.dead_i.bungeerelay.listeners.*;
-import net.craftminecraft.bungee.bungeeyaml.pluginapi.ConfigurablePlugin;
+import net.md_5.bungee.api.plugin.Plugin;
+import net.md_5.bungee.config.Configuration;
+import net.md_5.bungee.config.ConfigurationProvider;
+import net.md_5.bungee.config.YamlConfiguration;
 
 import java.io.*;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.concurrent.TimeUnit;
 
-public class Main extends ConfigurablePlugin {
+public class BungeeRelay extends Plugin {
+    private static Configuration config;
+
     public void onEnable() {
         // Immediately provide an offline mode warning, due to how incredibly dangerous it is in the case of this plugin.
         if (!getProxy().getConfig().isOnlineMode()) {
@@ -20,7 +26,7 @@ public class Main extends ConfigurablePlugin {
         }
 
         // Save the default configuration
-        saveDefaultConfig();
+        if (setupConfig()) return;
 
         // Register listeners
         getProxy().getPluginManager().registerListener(this, new ChatListener(this));
@@ -58,7 +64,7 @@ public class Main extends ConfigurablePlugin {
     public void connect() {
         getLogger().info("Attempting connection...");
         try {
-            new IRC(new Socket(getConfig().getString("server.host"), getConfig().getInt("server.port")), getConfig(), this);
+            new IRC(new Socket(getConfig().getString("server.host"), getConfig().getInt("server.port")), this);
         } catch (UnknownHostException e) {
             handleDisconnect();
         } catch (IOException e) {
@@ -78,5 +84,26 @@ public class Main extends ConfigurablePlugin {
                 }
             }, reconnect, TimeUnit.MILLISECONDS);
         }
+    }
+
+    public boolean setupConfig() {
+        if (!getDataFolder().exists()) getDataFolder().mkdir();
+        File file = new File(getDataFolder(), "config.yml");
+        try {
+            if (!file.exists()) {
+                file.createNewFile();
+                ByteStreams.copy(getResourceAsStream("config.yml"), new FileOutputStream(file));
+                getLogger().warning("A new configuration file has been created. Please edit config.yml and restart BungeeCord.");
+                return true;
+            }
+            config = ConfigurationProvider.getProvider(YamlConfiguration.class).load(file);
+        } catch(IOException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    public static Configuration getConfig() {
+        return config;
     }
 }

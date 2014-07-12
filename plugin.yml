@@ -1,5 +1,4 @@
 name: BungeeRelay
 version: 0.1
 author: Dead-i
-main: io.github.dead_i.bungeerelay.Main
-depends: [BungeeYAML]
+main: io.github.dead_i.bungeerelay.BungeeRelay

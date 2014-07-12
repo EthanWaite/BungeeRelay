@@ -30,9 +30,9 @@ public class Util {
     }
 
     public static void sendUserConnect(ProxiedPlayer p) {
-        String name = IRC.config.getString("server.userprefix") + p.getName() + IRC.config.getString("server.usersuffix");
-        String host = IRC.config.getString("server.userhost");
-        host = host.replace("{UUID}", p.getUniqueId().toString().replace("-", ""))
+        String name = BungeeRelay.getConfig().getString("server.userprefix") + p.getName() + BungeeRelay.getConfig().getString("server.usersuffix");
+        String host = BungeeRelay.getConfig().getString("server.userhost")
+                .replace("{UUID}", p.getUniqueId().toString().replace("-", ""))
                 .replace("{PLAYER}", p.getName())
                 .replace("{HOST}", p.getAddress().getHostString());
 
@@ -95,10 +95,10 @@ public class Util {
 
     public static List<String> getChannels() {
         List<String> out = new ArrayList<String>();
-        String channel = IRC.config.getString("server.channel");
+        String channel = BungeeRelay.getConfig().getString("server.channel");
         if (channel.isEmpty()) {
             for (ServerInfo si : proxy.getServers().values()) {
-                out.add(IRC.config.getString("server.chanprefix") + si.getName());
+                out.add(BungeeRelay.getConfig().getString("server.chanprefix") + si.getName());
             }
         }else{
             out.add(channel);
@@ -107,10 +107,10 @@ public class Util {
     }
 
     public static Collection<ProxiedPlayer> getPlayersByChannel(String c) {
-        if (IRC.config.getString("server.staff").equalsIgnoreCase(c)) {
+        if (BungeeRelay.getConfig().getString("server.staff").equalsIgnoreCase(c)) {
             return Collections.emptyList();
-        }else if (IRC.config.getString("server.channel").isEmpty()) {
-            String pref = IRC.config.getString("server.chanprefix");
+        }else if (BungeeRelay.getConfig().getString("server.channel").isEmpty()) {
+            String pref = BungeeRelay.getConfig().getString("server.chanprefix");
             if (c.startsWith(pref)) c = c.substring(pref.length());
             ServerInfo si = proxy.getServerInfo(c);
             if (si == null) return Collections.emptyList();

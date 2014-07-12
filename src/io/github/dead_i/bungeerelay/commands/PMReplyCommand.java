@@ -1,5 +1,6 @@
 package io.github.dead_i.bungeerelay.commands;
 
+import io.github.dead_i.bungeerelay.BungeeRelay;
 import io.github.dead_i.bungeerelay.IRC;
 import io.github.dead_i.bungeerelay.Util;
 import net.md_5.bungee.api.ChatColor;
@@ -40,7 +41,7 @@ public class PMReplyCommand extends Command {
         for (String a : args) msg.append(a).append(" ");
 
         IRC.out.println(":" + IRC.uids.get(sender) + " PRIVMSG " + uid + " :" + msg);
-        sender.sendMessage(new TextComponent(ChatColor.translateAlternateColorCodes('&', IRC.config.getString("formats.privatemsg")
+        sender.sendMessage(new TextComponent(ChatColor.translateAlternateColorCodes('&', BungeeRelay.getConfig().getString("formats.privatemsg")
                 .replace("{SENDER}", sender.getName())
                 .replace("{MESSAGE}", msg.toString().trim()))));
     }

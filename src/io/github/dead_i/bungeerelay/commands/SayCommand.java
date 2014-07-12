@@ -1,5 +1,6 @@
 package io.github.dead_i.bungeerelay.commands;
 
+import io.github.dead_i.bungeerelay.BungeeRelay;
 import io.github.dead_i.bungeerelay.IRC;
 import io.github.dead_i.bungeerelay.Util;
 import net.md_5.bungee.api.ChatColor;
@@ -23,7 +24,7 @@ public class SayCommand extends Command {
         }
         StringBuilder msg = new StringBuilder();
         for (String a : args) msg.append(a);
-        plugin.getProxy().broadcast(new TextComponent(ChatColor.translateAlternateColorCodes('&', IRC.config.getString("formats.saycommand").replace("{MESSAGE}", msg.toString()))));
+        plugin.getProxy().broadcast(new TextComponent(ChatColor.translateAlternateColorCodes('&', BungeeRelay.getConfig().getString("formats.saycommand").replace("{MESSAGE}", msg.toString()))));
         if (!IRC.sock.isConnected()) {
             sender.sendMessage(new TextComponent(ChatColor.RED + "The proxy is not connected to IRC."));
             return;

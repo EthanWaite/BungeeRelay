@@ -1,6 +1,5 @@
 package io.github.dead_i.bungeerelay;
 
-import net.craftminecraft.bungee.bungeeyaml.bukkitapi.file.FileConfiguration;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.config.ServerInfo;
@@ -21,7 +20,6 @@ public class IRC {
     public static Socket sock;
     public static BufferedReader in;
     public static PrintWriter out;
-    public static FileConfiguration config;
     public static String mainUid;
     public static String currentUid;
     public static String prefixes;
@@ -35,11 +33,10 @@ public class IRC {
     public static HashMap<String, Channel> chans = new HashMap<String, Channel>();
     Plugin plugin;
 
-    public IRC(Socket s, FileConfiguration c, Plugin p) throws IOException {
+    public IRC(Socket s, Plugin p) throws IOException {
         sock = s;
-        config = c;
         plugin = p;
-        mainUid = config.getString("server.id") + "AAAAAA";;
+        mainUid = BungeeRelay.getConfig().getString("server.id") + "AAAAAA";
         currentUid = mainUid;
         in = new BufferedReader(new InputStreamReader(sock.getInputStream()));
         out = new PrintWriter(sock.getOutputStream(), true);
@@ -52,12 +49,12 @@ public class IRC {
         data = data.trim();
         String[] ex = data.split(" ");
 
-        if (config.getBoolean("server.debug")) plugin.getLogger().info("Received: "+data);
+        if (BungeeRelay.getConfig().getBoolean("server.debug")) plugin.getLogger().info("Received: "+data);
 
         if (!authenticated && ex[0].equals("CAPAB")) {
             if (ex[1].equals("START")) {
                 plugin.getLogger().info("Authenticating with server...");
-                out.println("SERVER " + config.getString("server.servername") + " " + config.getString("server.sendpass") + " 0 " + config.getString("server.id") + " :" + config.getString("server.realname"));
+                out.println("SERVER " + BungeeRelay.getConfig().getString("server.servername") + " " + BungeeRelay.getConfig().getString("server.sendpass") + " 0 " + BungeeRelay.getConfig().getString("server.id") + " :" + BungeeRelay.getConfig().getString("server.realname"));
                 out.println("CAPAB START 1202");
             }
             if (ex[1].equals("END")) {
@@ -65,13 +62,13 @@ public class IRC {
                 out.println("CAPAB END");
                 out.println("BURST " + startTime);
                 out.println("VERSION :0.1");
-                out.println("UID " + mainUid + " " + startTime + " " + config.getString("bot.nick") + " BungeeRelay " + config.getString("bot.host") + " " + config.getString("bot.ident") + " BungeeRelay " + startTime + " +o :" + config.getString("bot.realname"));
-                out.println(":" + mainUid + " OPERTYPE " + config.getString("bot.opertype"));
+                out.println("UID " + mainUid + " " + startTime + " " + BungeeRelay.getConfig().getString("bot.nick") + " BungeeRelay " + BungeeRelay.getConfig().getString("bot.host") + " " + BungeeRelay.getConfig().getString("bot.ident") + " BungeeRelay " + startTime + " +o :" + BungeeRelay.getConfig().getString("bot.realname"));
+                out.println(":" + mainUid + " OPERTYPE " + BungeeRelay.getConfig().getString("bot.opertype"));
                 authenticated = true;
             }
         }
 
-        if (ex[0].equals("SERVER") && !ex[2].equals(config.getString("server.recvpass"))) {
+        if (ex[0].equals("SERVER") && !ex[2].equals(BungeeRelay.getConfig().getString("server.recvpass"))) {
             plugin.getLogger().warning("The server "+ex[1]+" presented the wrong password.");
             plugin.getLogger().warning("Stopping connection due to security reasons.");
             plugin.getLogger().warning("Remember that the recvpass and sendpass are opposite to the ones in your links.conf");
@@ -94,12 +91,12 @@ public class IRC {
 
         if (ex[1].equals("ENDBURST")) {
             Util.incrementUid();
-            String chan = config.getString("server.channel");
-            String topic = config.getString("server.topic");
-            String botmodes = config.getString("bot.modes");
+            String chan = BungeeRelay.getConfig().getString("server.channel");
+            String topic = BungeeRelay.getConfig().getString("server.topic");
+            String botmodes = BungeeRelay.getConfig().getString("bot.modes");
             if (chan.isEmpty()) {
                 for (ServerInfo si : plugin.getProxy().getServers().values()) {
-                    chan = config.getString("server.chanprefix") + si.getName();
+                    chan = BungeeRelay.getConfig().getString("server.chanprefix") + si.getName();
                     Util.sendMainJoin(chan, botmodes, topic.replace("{SERVERNAME}", si.getName()));
                     for (ProxiedPlayer p : si.getPlayers()) {
                         Util.sendUserConnect(p);
@@ -115,16 +112,16 @@ public class IRC {
                     Util.incrementUid();
                 }
             }
-            chan = config.getString("server.staff");
+            chan = BungeeRelay.getConfig().getString("server.staff");
             if (!chan.isEmpty()) {
-                Util.sendMainJoin(chan, botmodes, config.getString("server.stafftopic"));
-                Util.giveChannelModes(chan, config.getString("server.staffmodes"));
+                Util.sendMainJoin(chan, botmodes, BungeeRelay.getConfig().getString("server.stafftopic"));
+                Util.giveChannelModes(chan, BungeeRelay.getConfig().getString("server.staffmodes"));
             }
             out.println("ENDBURST");
         }
 
         if (ex[1].equals("PING")) {
-            out.println("PONG " + config.getString("server.id") + " "+ex[2]);
+            out.println("PONG " + BungeeRelay.getConfig().getString("server.id") + " "+ex[2]);
         }
 
         if (ex[1].equals("UID")) {
@@ -134,8 +131,8 @@ public class IRC {
         if (ex[1].equals("PRIVMSG")) {
             String from = users.get(ex[0].substring(1));
             String player = users.get(ex[2]);
-            int prefixlen = config.getString("server.userprefix").length();
-            int suffixlen = config.getString("server.usersuffix").length();
+            int prefixlen = BungeeRelay.getConfig().getString("server.userprefix").length();
+            int suffixlen = BungeeRelay.getConfig().getString("server.usersuffix").length();
             Collection<ProxiedPlayer> players = new ArrayList<ProxiedPlayer>();
             boolean isPM;
             if (player != null && prefixlen < player.length() && suffixlen < player.length()) {
@@ -161,16 +158,16 @@ public class IRC {
                 String out;
                 if (len == 4) {
                     if (isPM) {
-                        out = config.getString("formats.privateme");
+                        out = BungeeRelay.getConfig().getString("formats.privateme");
                     }else{
-                        out = config.getString("formats.me");
+                        out = BungeeRelay.getConfig().getString("formats.me");
                     }
                     s = s.replaceAll(ch, "");
                 }else{
                     if (isPM) {
-                        out = config.getString("formats.privatemsg");
+                        out = BungeeRelay.getConfig().getString("formats.privatemsg");
                     }else{
-                        out = config.getString("formats.msg");
+                        out = BungeeRelay.getConfig().getString("formats.msg");
                     }
                     s = s.substring(1);
                 }
@@ -199,7 +196,7 @@ public class IRC {
                 }
             }
             for (ProxiedPlayer p : Util.getPlayersByChannel(ex[2])) {
-                p.sendMessage(new TextComponent(ChatColor.translateAlternateColorCodes('&', config.getString("formats.mode")
+                p.sendMessage(new TextComponent(ChatColor.translateAlternateColorCodes('&', BungeeRelay.getConfig().getString("formats.mode")
                         .replace("{SENDER}", users.get(ex[0].substring(1)))
                         .replace("{MODE}", ex[4] + " " + s))));
             }
@@ -207,7 +204,7 @@ public class IRC {
 
         if (ex[1].equals("FJOIN")) {
             for (ProxiedPlayer p : Util.getPlayersByChannel(ex[2])) {
-                p.sendMessage(new TextComponent(ChatColor.translateAlternateColorCodes('&', config.getString("formats.join")
+                p.sendMessage(new TextComponent(ChatColor.translateAlternateColorCodes('&', BungeeRelay.getConfig().getString("formats.join")
                         .replace("{SENDER}", users.get(ex[5].split(",")[1])))));
             }
         }
@@ -220,7 +217,7 @@ public class IRC {
                 reason = "";
             }
             for (ProxiedPlayer p : Util.getPlayersByChannel(ex[2])) {
-                p.sendMessage(new TextComponent(ChatColor.translateAlternateColorCodes('&', config.getString("formats.part")
+                p.sendMessage(new TextComponent(ChatColor.translateAlternateColorCodes('&', BungeeRelay.getConfig().getString("formats.part")
                         .replace("{SENDER}", users.get(ex[0].substring(1)))
                         .replace("{REASON}", reason))));
             }
@@ -231,18 +228,18 @@ public class IRC {
             String target = users.get(ex[3]);
             String sender = users.get(ex[0].substring(1));
             for (ProxiedPlayer p : Util.getPlayersByChannel(ex[2])) {
-                p.sendMessage(new TextComponent(ChatColor.translateAlternateColorCodes('&', config.getString("formats.kick")
+                p.sendMessage(new TextComponent(ChatColor.translateAlternateColorCodes('&', BungeeRelay.getConfig().getString("formats.kick")
                         .replace("{SENDER}", sender)
                         .replace("{TARGET}", target)
                         .replace("{REASON}", reason))));
             }
             String full = users.get(ex[3]);
-            int prefixlen = config.getString("server.userprefix").length();
-            int suffixlen = config.getString("server.usersuffix").length();
-            if (config.getBoolean("server.kick") && prefixlen < full.length() && suffixlen < full.length()) {
+            int prefixlen = BungeeRelay.getConfig().getString("server.userprefix").length();
+            int suffixlen = BungeeRelay.getConfig().getString("server.usersuffix").length();
+            if (BungeeRelay.getConfig().getBoolean("server.kick") && prefixlen < full.length() && suffixlen < full.length()) {
                 ProxiedPlayer player = plugin.getProxy().getPlayer(full.substring(prefixlen, full.length() - suffixlen));
                 if (player != null) {
-                    player.disconnect(new TextComponent(ChatColor.translateAlternateColorCodes('&', config.getString("formats.disconnectkick")
+                    player.disconnect(new TextComponent(ChatColor.translateAlternateColorCodes('&', BungeeRelay.getConfig().getString("formats.disconnectkick")
                             .replace("{SENDER}", sender)
                             .replace("{TARGET}", target)
                             .replace("{REASON}", reason))));
@@ -260,7 +257,7 @@ public class IRC {
             }
 
             for (Map.Entry<String, Channel> ch : chans.entrySet()) {
-                String chan = IRC.config.getString("server.channel");
+                String chan = BungeeRelay.getConfig().getString("server.channel");
                 if (chan.isEmpty()) {
                     chan = ch.getKey();
                 }else if (!ch.getKey().equals(chan)) {
@@ -268,7 +265,7 @@ public class IRC {
                 }
                 if (!ch.getValue().users.contains(ex[0].substring(1))) continue;
                 for (ProxiedPlayer p : Util.getPlayersByChannel(chan)) {
-                    p.sendMessage(new TextComponent(ChatColor.translateAlternateColorCodes('&', config.getString("formats.quit")
+                    p.sendMessage(new TextComponent(ChatColor.translateAlternateColorCodes('&', BungeeRelay.getConfig().getString("formats.quit")
                             .replace("{SENDER}", users.get(ex[0].substring(1)))
                             .replace("{REASON}", reason))));
                 }

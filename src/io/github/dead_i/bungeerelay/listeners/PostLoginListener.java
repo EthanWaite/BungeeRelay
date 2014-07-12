@@ -1,5 +1,6 @@
 package io.github.dead_i.bungeerelay.listeners;
 
+import io.github.dead_i.bungeerelay.BungeeRelay;
 import io.github.dead_i.bungeerelay.IRC;
 import io.github.dead_i.bungeerelay.Util;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
@@ -20,7 +21,7 @@ public class PostLoginListener implements Listener {
         ProxiedPlayer p = event.getPlayer();
         Util.sendUserConnect(p);
         Util.incrementUid();
-        String chan = IRC.config.getString("server.channel");
+        String chan = BungeeRelay.getConfig().getString("server.channel");
         if (!chan.isEmpty()) Util.sendChannelJoin(p, chan);
     }
 }
