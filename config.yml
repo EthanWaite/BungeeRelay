@@ -82,6 +82,14 @@ server:
   # This value will be  ignored if the value of "staff" above is blank.
   staffmodes: "+O"
 
+  # The visible host that will represent each Minecraft user over IRC. All users will be able
+  # to see this host, but IRC network administrators will still be able to see the real
+  # hostname and IP address for Minecraft users (likely through /whois). You can specify the
+  # parameters {UUID}, {PLAYER} and {HOST} (the UUID, the username and the real hostmask).
+  # It is recommended to use these parameters so that hostmasks are unique. If you do not
+  # wish ANY adjustments to be made to the host, just set the value simply to "{HOST}".
+  userhost: "Minecraft/{UUID}"
+
   # You can set a prefix and suffix to the nicknames of Minecraft IRC users. This can be
   # helpful for users to distinguish between Minecraft players and normal IRC users.
   # For example, if usersuffix was "/minecraft", I appear on IRC as "Dead_i/minecraft"

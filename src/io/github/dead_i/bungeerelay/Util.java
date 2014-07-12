@@ -31,10 +31,15 @@ public class Util {
 
     public static void sendUserConnect(ProxiedPlayer p) {
         String name = IRC.config.getString("server.userprefix") + p.getName() + IRC.config.getString("server.usersuffix");
+        String host = IRC.config.getString("server.userhost");
+        host = host.replace("{UUID}", p.getUniqueId().toString().replace("-", ""))
+                .replace("{PLAYER}", p.getName())
+                .replace("{HOST}", p.getAddress().getHostString());
+
         IRC.times.put(p, System.currentTimeMillis() / 1000);
         IRC.uids.put(p, IRC.currentUid);
         IRC.users.put(IRC.currentUid, name);
-        IRC.out.println("UID " + IRC.currentUid + " " + System.currentTimeMillis() / 1000 + " " + name + " " + p.getAddress().getHostName() + " " + p.getAddress().getHostName() + " " + p.getName() + " " + p.getAddress().getHostString() + " " + IRC.times.get(p) + " +r :Minecraft Player");
+        IRC.out.println("UID " + IRC.currentUid + " " + System.currentTimeMillis() / 1000 + " " + name + " " + p.getAddress().getHostName() + " " + host + " " + p.getName() + " " + p.getAddress().toString() + " " + IRC.times.get(p) + " +r :Minecraft Player");
     }
 
     public static void sendChannelJoin(ProxiedPlayer p, String c) {
